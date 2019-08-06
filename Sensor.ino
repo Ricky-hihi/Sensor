@@ -1,36 +1,51 @@
 void setup() {
-  Serial.begin(9600);                                                        // start serial connection
-  pinMode(5, INPUT);                                                      // initialize digital pin5 as an input
-  pinMode(LED_BUILTIN, OUTPUT);                              // initialize digital pin LED_BUILTIN as an output.
+  Serial.begin(9600);                        // start serial connection
+  pinMode(5, INPUT);                        // initialize digital pin5 as an input
+  pinMode(7, INPUT);                        // initialize digital pin7 as an input
+  pinMode(LED_BUILTIN, OUTPUT);             // initialize digital pin LED_BUILTIN as an output.
   
 }
 
-int i=0 ;
-int j=0 ;
+int i=0  ;                                  // the number of times starts from 0
+int j=30 ;                                  // number of detections
 
-// the loop function runs over and over again forever
 void loop() {
-  
-  int lux = digitalRead(5);                                                              // move pin5 into lux
-  Serial.print("Lux: "); Serial.println(lux);                                              // print out lux
-  Serial.print("i="); Serial.println(i);
-
-   if (lux == HIGH && i<50){
-    i++;
-    j++;
-   }else{
-     i = 0;
-     j = 0;
-     Serial.println(j);
-   }
-  Serial.print("j ="); Serial.println(j); 
-  if (j==50){
-    digitalWrite(LED_BUILTIN,HIGH) ;
-    delay (5000) ;
-    i = 0;
-    j = 0;
+ 
+ int lux = digitalRead(5);
+ int Switch = digitalRead(7);
+ int led= digitalRead(LED_BUILTIN);
+ Serial.print("Lux: "); Serial.println(lux);  // print out lux
+ 
+  if (Switch==HIGH){
+     if (lux==HIGH){
+        i++ ;
+        delay (100);
+       }else{
+         i=0 ;
+         }
+      Serial.print("i: "); Serial.print(i);
+      
+      if (i>=j){
+       digitalWrite(LED_BUILTIN,HIGH) ;
+        }else{
+          digitalWrite(LED_BUILTIN,LOW) ;
+          }
+          Serial.print("  LED: "); Serial.println(led);
+          
     }else{
-      digitalWrite(LED_BUILTIN,LOW) ;
-      delay(500);
+      if (lux == LOW){
+           i++ ;
+           delay (100);
+        }else{
+           i=0 ;
+      }
+      
+      Serial.print("i: "); Serial.print(i);
+      if (i>j){
+          digitalWrite(LED_BUILTIN,HIGH) ;
+        }else{
+          digitalWrite(LED_BUILTIN,LOW) ;
+        }
+      Serial.print("  LED: "); Serial.println(led);
       }
 }
