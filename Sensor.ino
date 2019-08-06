@@ -1,51 +1,50 @@
 void setup() {
-  Serial.begin(9600);                        // start serial connection
-  pinMode(5, INPUT);                        // initialize digital pin5 as an input
-  pinMode(7, INPUT);                        // initialize digital pin7 as an input
-  pinMode(LED_BUILTIN, OUTPUT);             // initialize digital pin LED_BUILTIN as an output.
+
+  Serial.begin(9600) ;                        // start serial connection
+  pinMode(5, INPUT) ;                        // initialize digital pin5 as an input
+  pinMode(7, INPUT_PULLUP) ;                 // initialize digital pin7 as an input pullup
+  pinMode(LED_BUILTIN, OUTPUT) ;             // initialize digital pin LED_BUILTIN as an output.
   
 }
 
-int i=0  ;                                  // the number of times starts from 0
-int j=30 ;                                  // number of detections
+byte j ;                                      // 感應到才計算
+byte a[30] = {0} ;
 
 void loop() {
+ byte led = digitalRead(LED_BUILTIN) ;
+ Serial.print("Lux: ") ;Serial.println(digitalRead(5)) ;  // print out pin5
  
- int lux = digitalRead(5);
- int Switch = digitalRead(7);
- int led= digitalRead(LED_BUILTIN);
- Serial.print("Lux: "); Serial.println(lux);  // print out lux
- 
-  if (Switch==HIGH){
-     if (lux==HIGH){
-        i++ ;
-        delay (100);
-       }else{
-         i=0 ;
-         }
-      Serial.print("i: "); Serial.print(i);
-      
-      if (i>=j){
-       digitalWrite(LED_BUILTIN,HIGH) ;
-        }else{
-          digitalWrite(LED_BUILTIN,LOW) ;
-          }
-          Serial.print("  LED: "); Serial.println(led);
-          
-    }else{
-      if (lux == LOW){
-           i++ ;
-           delay (100);
-        }else{
-           i=0 ;
-      }
-      
-      Serial.print("i: "); Serial.print(i);
-      if (i>j){
+  switch (digitalRead(7)){
+    case HIGH :
+    Serial.print("LED: "); Serial.println(led);
+      for (byte i = 0 ; i<30 ; i++){
+        a[i] =  digitalRead(5) ;
+        j+=a[i] ;
+        delay (100) ;
+        Serial.print(a[i]) ; Serial.print("  j=") ; Serial.println(j) ;
+        }      
+        if (j>15){
           digitalWrite(LED_BUILTIN,HIGH) ;
-        }else{
-          digitalWrite(LED_BUILTIN,LOW) ;
+          }else{
+            digitalWrite(LED_BUILTIN,LOW) ;
+            }
+         j = 0 ;
+        break ;
+        
+    case LOW :
+    Serial.print("LED: "); Serial.println(led);
+      for (byte i = 0 ; i<30 ; i++){
+        a[i] =  digitalRead(5) ;
+        delay (100) ;
+        j+= a[i] ;
+        Serial.print(a[i]) ; Serial.print("  j=") ; Serial.println(j) ;
         }
-      Serial.print("  LED: "); Serial.println(led);
-      }
-}
+        if (j<15){
+          digitalWrite(LED_BUILTIN,HIGH) ;
+          }else{
+            digitalWrite(LED_BUILTIN,LOW) ;
+            }
+         j = 0 ;
+            break ;
+        }
+  }
